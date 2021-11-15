@@ -13,6 +13,7 @@ public class PatientEntity {
     private Date datenaissance;
     private String adresse;
     private VilleEntity ville;
+    private String mail;
 
     public PatientEntity(int id, String nom, String prenom, Date datenaissance, String adresse, VilleEntity ville) {
         this.id = id;
@@ -21,6 +22,7 @@ public class PatientEntity {
         this.datenaissance = datenaissance;
         this.adresse = adresse;
         this.ville = ville;
+        this.mail = mail;
     }
 
     public PatientEntity() {
@@ -75,6 +77,16 @@ public class PatientEntity {
 
     public void setAdresse(String adresse) {
         this.adresse = adresse;
+    }
+
+    @Basic
+    @Column(name = "mail", nullable = false, length = 100)
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     @Override

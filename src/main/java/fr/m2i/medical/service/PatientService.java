@@ -32,9 +32,13 @@ public class PatientService {
             throw new InvalidObjectException("Prénom du patient invalide");
         }
 
+        if( p.getAdresse().length() <= 10  ){
+            throw new InvalidObjectException("Adresse du patient invalide");
+        }
+
         String emailtype = "^[\\w.-]+@[\\w.-]+\\.[a-z]{2,}$";
-        if ((p.getAdresse().matches( emailtype) != true ) || (p.getAdresse().length() <= 10)){
-            throw new InvalidObjectException("Adresse mail du patient invalide");
+        if ((p.getMail().matches( emailtype) != true ) || (p.getMail().length() <= 10)){
+            throw new InvalidObjectException("Mail du patient invalide");
         }
 
         try {
@@ -68,6 +72,7 @@ public class PatientService {
             pExistante.setDatenaissance(p.getDatenaissance());
             pExistante.setAdresse(p.getAdresse());
             pExistante.setVille(p.getVille());
+            pExistante.setMail(p.getMail());
             pr.save( pExistante );
 
         }catch ( NoSuchElementException e ){
