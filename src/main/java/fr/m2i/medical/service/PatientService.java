@@ -40,7 +40,7 @@ public class PatientService {
         try {
             p.setVille(vs.findVille(p.getVille().getId()));
         } catch (Exception e) {
-            throw new InvalidObjectException("La ville n'est pas valide");
+            throw new InvalidObjectException("Ville du patient invalide");
         }
 
     }
