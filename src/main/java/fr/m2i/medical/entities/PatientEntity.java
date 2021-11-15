@@ -94,7 +94,7 @@ public class PatientEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PatientEntity that = (PatientEntity) o;
-        return id == that.id && Objects.equals(nom, that.nom) && Objects.equals(prenom, that.prenom) && Objects.equals(datenaissance, that.datenaissance) && Objects.equals(adresse, that.adresse);
+        return id == that.id && Objects.equals(nom, that.nom) && Objects.equals(prenom, that.prenom) && Objects.equals(datenaissance, that.datenaissance) && Objects.equals(adresse, that.adresse) && Objects.equals(mail, that.mail);
     }
 
     @Override
@@ -106,12 +106,13 @@ public class PatientEntity {
                 ", datenaissance=" + datenaissance +
                 ", adresse='" + adresse + '\'' +
                 ", ville=" + ville +
+                ", mail=" + mail +
                 '}';
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nom, prenom, datenaissance, adresse);
+        return Objects.hash(id, nom, prenom, datenaissance, adresse, mail);
     }
 
     @OneToOne
