@@ -32,8 +32,9 @@ public class PatientService {
             throw new InvalidObjectException("Prénom du patient invalide");
         }
 
-        if( p.getAdresse().length() <= 10  ){
-            throw new InvalidObjectException("Adresse du patient invalide");
+        String emailtype = "^[\\w.-]+@[\\w.-]+\\.[a-z]{2,}$";
+        if ((p.getAdresse().matches( emailtype) != true ) || (p.getAdresse().length() <= 10)){
+            throw new InvalidObjectException("Adresse mail du patient invalide");
         }
 
         try {
