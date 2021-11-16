@@ -12,8 +12,7 @@ public class VilleService {
 
     private VilleRepository vr;
 
-    public VilleService( VilleRepository vr ){
-        this.vr = vr;
+    public VilleService( VilleRepository vr ){this.vr = vr;
     }
 
     public Iterable<VilleEntity> findAll() {
