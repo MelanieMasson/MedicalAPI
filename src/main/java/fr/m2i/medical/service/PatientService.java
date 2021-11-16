@@ -1,5 +1,6 @@
 package fr.m2i.medical.service;
 
+import fr.m2i.medical.api.PatientAPIController;
 import fr.m2i.medical.entities.PatientEntity;
 import fr.m2i.medical.entities.VilleEntity;
 import fr.m2i.medical.repositories.PatientRepository;
@@ -27,26 +28,20 @@ public class PatientService {
         return pr.findAll();
     }
 
-    public static boolean validateEmail(String emailStr) {
-        Pattern VALID_EMAIL_ADDRESS_REGEX =
-                Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
-        return matcher.find();
-    }
-
-    public static boolean validateTelephone(String telephoneStr) {
-        Pattern VALID_TELEPHONE_NUMBER_REGEX =
-                Pattern.compile("\\d{10} | " +"(?:\\d{3}-){2}\\d{4}|" + "(?:\\d{2}-){4}\\d{2}|" + "(?:\\d{2} ){4}\\d{2}|" + "\\(\\d{3}\\)\\d{3}-?\\d{4}", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = VALID_TELEPHONE_NUMBER_REGEX.matcher(telephoneStr);
-        return matcher.find();
-    }
-
     public PatientEntity findPatient(int id) {
         return pr.findById(id).get();
     }
 
     public void delete(int id) {
         pr.deleteById(id);
+    }
+
+    public static boolean validate(String emailStr) {
+        Pattern VALID_EMAIL_ADDRESS_REGEX =
+                Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
+        return matcher.find();
     }
 
     private void checkPatient( PatientEntity p ) throws InvalidObjectException {
@@ -63,37 +58,50 @@ public class PatientService {
             throw new InvalidObjectException("Adresse invalide");
         }
 
+        if( p.getTelephone().length() <= 8 ){
+            throw new InvalidObjectException("Téléphone invalide");
+        }
+
+        if( p.getEmail().length() <= 5 || !validate( p.getEmail() ) ){
+            throw new InvalidObjectException("Email invalide");
+        }
+
+        //System.out.println( "Ville passée en param " + p.getVille().getId() );
+
+        /* try{
+            VilleEntity ve = vr.findById(p.getVille().getId()).get();
+        }catch( Exception e ){
+            throw new InvalidObjectException("Ville invalide");
+        } */
+
         VilleEntity ve = vr.findById(p.getVille().getId()).orElseGet( null );
         if( ve == null ){
             throw new InvalidObjectException("Ville invalide");
         }
-
-        if( p.getEmail().length() <= 4 || !validateEmail( p.getEmail() ) ){
-            throw new InvalidObjectException("Email invalide");
-        }
-
-        if( p.getTelephone().length() < 10 || !validateTelephone( p.getTelephone() ) ){
-            throw new InvalidObjectException("Numero de téléphone invalide");
-        }
     }
 
-    public void addPatient( PatientEntity p ) throws InvalidObjectException {
+    public void addPatient(PatientEntity p) throws InvalidObjectException {
         checkPatient(p);
         pr.save(p);
     }
 
-    public void editPatient( int id , PatientEntity p) throws InvalidObjectException , NoSuchElementException {
+    public void editPatient(int id, PatientEntity p) throws InvalidObjectException {
         checkPatient(p);
+
+        /*Optional<PatientEntity> pe = pr.findById(id);
+        PatientEntity pp = pe.orElse( null );*/
+
         try{
             PatientEntity pExistant = pr.findById(id).get();
 
-            pExistant.setNom( p.getNom() );
             pExistant.setPrenom( p.getPrenom() );
-            pExistant.setDatenaissance(p.getDatenaissance());
-            pExistant.setAdresse(p.getAdresse());
-            pExistant.setVille(p.getVille());
-            pExistant.setEmail(p.getEmail());
-            pExistant.setTelephone(p.getTelephone());
+            pExistant.setNom( p.getNom() );
+            pExistant.setAdresse( p.getAdresse() );
+            pExistant.setDateNaissance( p.getDateNaissance() );
+            pExistant.setVille( p.getVille() );
+            pExistant.setTelephone( p.getTelephone() );
+            pExistant.setEmail( p.getEmail() );
+
             pr.save( pExistant );
 
         }catch ( NoSuchElementException e ){
@@ -101,6 +109,5 @@ public class PatientService {
         }
 
         pr.save(p);
-
     }
 }

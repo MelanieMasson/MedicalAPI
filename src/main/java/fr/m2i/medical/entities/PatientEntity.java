@@ -10,24 +10,24 @@ public class PatientEntity {
     private int id;
     private String nom;
     private String prenom;
-    private Date datenaissance;
-    private String adresse;
-    private VilleEntity ville;
+    private Date dateNaissance;
     private String email;
     private String telephone;
+    private String adresse;
+    private VilleEntity ville;
 
-    public PatientEntity(int id, String nom, String prenom, Date datenaissance, String adresse, VilleEntity ville, String email, String telephone) {
+    public PatientEntity() {
+    }
+
+    public PatientEntity(int id, String nom, String prenom, Date dateNaissance, String email, String telephone, String adresse, VilleEntity ville) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;
-        this.datenaissance = datenaissance;
-        this.adresse = adresse;
-        this.ville = ville;
+        this.dateNaissance = dateNaissance;
         this.email = email;
         this.telephone = telephone;
-    }
-
-    public PatientEntity() {
+        this.adresse = adresse;
+        this.ville = ville;
     }
 
     @Id
@@ -63,22 +63,12 @@ public class PatientEntity {
 
     @Basic
     @Column(name = "date_naissance", nullable = false)
-    public Date getDatenaissance() {
-        return datenaissance;
+    public Date getDateNaissance() {
+        return dateNaissance;
     }
 
-    public void setDatenaissance(Date datenaissance) {
-        this.datenaissance = datenaissance;
-    }
-
-    @Basic
-    @Column(name = "adresse", nullable = false, length = 100)
-    public String getAdresse() {
-        return adresse;
-    }
-
-    public void setAdresse(String adresse) {
-        this.adresse = adresse;
+    public void setDateNaissance(Date dateNaissance) {
+        this.dateNaissance = dateNaissance;
     }
 
     @Basic
@@ -101,31 +91,27 @@ public class PatientEntity {
         this.telephone = telephone;
     }
 
+    @Basic
+    @Column(name = "adresse", nullable = false, length = 100)
+    public String getAdresse() {
+        return adresse;
+    }
+
+    public void setAdresse(String adresse) {
+        this.adresse = adresse;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PatientEntity that = (PatientEntity) o;
-        return id == that.id && Objects.equals(nom, that.nom) && Objects.equals(prenom, that.prenom) && Objects.equals(datenaissance, that.datenaissance) && Objects.equals(adresse, that.adresse) && Objects.equals(email, that.email) && Objects.equals(telephone, that.telephone);
-    }
-
-    @Override
-    public String toString() {
-        return "PatientEntity{" +
-                "id=" + id +
-                ", nom='" + nom + '\'' +
-                ", prenom='" + prenom + '\'' +
-                ", datenaissance=" + datenaissance +
-                ", adresse='" + adresse + '\'' +
-                ", ville=" + ville +
-                ", email=" + email +
-                ", telephone=" + telephone +
-                '}';
+        return id == that.id && Objects.equals(nom, that.nom) && Objects.equals(prenom, that.prenom) && Objects.equals(dateNaissance, that.dateNaissance) && Objects.equals(email, that.email) && Objects.equals(telephone, that.telephone) && Objects.equals(adresse, that.adresse);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nom, prenom, datenaissance, adresse, email, telephone);
+        return Objects.hash(id, nom, prenom, dateNaissance, email, telephone, adresse);
     }
 
     @OneToOne
