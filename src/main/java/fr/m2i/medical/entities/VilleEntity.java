@@ -8,18 +8,16 @@ import java.util.Objects;
 public class VilleEntity {
     private int id;
     private String nom;
-    private String codePostal;
+    private int codePostal;
     private String pays;
 
-    public VilleEntity() {
-
-    }
-
-    public VilleEntity(int id, String nom, String codePostal, String pays) {
-        this.id = id;
+    public VilleEntity(String nom, int codePostal, String pays) {
         this.nom = nom;
         this.codePostal = codePostal;
         this.pays = pays;
+    }
+
+    public VilleEntity() {
     }
 
     @Id
@@ -45,11 +43,11 @@ public class VilleEntity {
 
     @Basic
     @Column(name = "code_postal", nullable = false)
-    public String getCodePostal() {
+    public int getCodePostal() {
         return codePostal;
     }
 
-    public void setCodePostal(String codePostal) {
+    public void setCodePostal(int codePostal) {
         this.codePostal = codePostal;
     }
 

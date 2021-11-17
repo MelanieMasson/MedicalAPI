@@ -20,7 +20,14 @@ public class VilleService {
         this.vr = vr;
     }
 
-    public Iterable<VilleEntity> findAll() {
+    public Iterable<VilleEntity> findAll(  ) {
+        return vr.findAll();
+    }
+
+    public Iterable<VilleEntity> findAll(  String search  ) {
+        if( search != null && search.length() > 0 ){
+            return vr.findByNomContains(search);
+        }
         return vr.findAll();
     }
 

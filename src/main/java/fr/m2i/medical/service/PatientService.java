@@ -102,13 +102,10 @@ public class PatientService {
             pExistant.setTelephone( p.getTelephone() );
             pExistant.setEmail( p.getEmail() );
 
-
             pr.save( pExistant );
 
         }catch ( NoSuchElementException e ){
             throw e;
         }
-
-        pr.save(p);
     }
 }
