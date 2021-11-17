@@ -48,7 +48,7 @@ public class PatientAPIController {
         try{
             ps.addPatient( p );
 
-            // création de l'url d'accès au nouvel objet => http://localhost:8080/api/ville/20
+            // création de l'url d'accès au nouvel objet => http://localhost:63342/api/ville/20
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand( p.getId() ).toUri();
 
             return ResponseEntity.created( uri ).body(p);

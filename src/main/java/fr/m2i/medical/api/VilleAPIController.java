@@ -48,7 +48,7 @@ public class VilleAPIController {
         try{
             vs.addVille( v );
 
-            // création de l'url d'accès au nouvel objet => http://localhost:8080/api/ville/20
+            // création de l'url d'accès au nouvel objet => http://localhost:63342/api/ville/20
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand( v.getId() ).toUri();
 
             return ResponseEntity.created( uri ).body(v);
