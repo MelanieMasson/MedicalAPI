@@ -1,5 +1,4 @@
 package fr.m2i.medical.entities;
-
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.Objects;

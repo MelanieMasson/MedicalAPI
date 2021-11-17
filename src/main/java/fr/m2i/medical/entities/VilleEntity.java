@@ -1,5 +1,4 @@
 package fr.m2i.medical.entities;
-
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -11,13 +10,13 @@ public class VilleEntity {
     private int codePostal;
     private String pays;
 
+    public VilleEntity() {
+    }
+
     public VilleEntity(String nom, int codePostal, String pays) {
         this.nom = nom;
         this.codePostal = codePostal;
         this.pays = pays;
-    }
-
-    public VilleEntity() {
     }
 
     @Id

@@ -6,9 +6,33 @@
 <header class="mb-5" th:include="~{ fragments/header::#header }"></header>
 
 <main class="container">
+    <div class="alert alert-danger" role="alert" th:if="${error != null && error.length() > 0}" th:text="${error}">
+    </div>
+
+    <div class="alert alert-success" role="alert" th:if="${success != null && success.length() > 0}" >
+        Opération effectuée avec succès
+    </div>
+
     <h1>Liste des patients</h1>
 
-    <a href="/patient/add" class="btn btn-primary">Ajouter un patient</a>
+    <form method="get" action="/patient">
+        <div class="row my-4">
+            <div class="col-4">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" name="search" placeholder="Rechercher" th:value="${search}" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <div class="col-4">
+                <button type="submit" class="btn btn-primary">Rechercher</button>
+            </div>
+            <div class="col-4">
+                <a href="/patient/add" class="btn btn-primary">Ajouter un patient</a>
+            </div>
+        </div>
+    </form>
+
+    <span class="badge bg-secondary" th:text="| ${ #lists.size(villes) } ville(s) trouvée(s) |"></span>
 
     <table class="table table-striped">
         <thead>
@@ -36,6 +60,23 @@
         </tr>
         </tbody>
     </table>
+
+    <!-- Exercice a faire -->
+    <!--
+    ceil( total patient / nbre par page )
+
+    <li class="page-item"><a class="page-link" href="/ville?page=1">1</a></li>
+    <li class="page-item"><a class="page-link" href="/ville?page=2">2</a></li>
+    -->
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+        </ul>
+    </nav>
+
+
 </main>
 
 <footer th:include="~{ fragments/footer::#footer }"></footer>

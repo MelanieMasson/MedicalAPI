@@ -1,5 +1,4 @@
 package fr.m2i.medical.service;
-
 import fr.m2i.medical.entities.PatientEntity;
 import fr.m2i.medical.entities.VilleEntity;
 import fr.m2i.medical.repositories.PatientRepository;
@@ -10,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.io.InvalidObjectException;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class VilleService {
@@ -31,6 +32,14 @@ public class VilleService {
         return vr.findAll();
     }
 
+    public VilleEntity findVille(int id) {
+        return vr.findById(id).get();
+    }
+
+    public void delete(int id) {
+        vr.deleteById(id);
+    }
+
     private void checkVille( VilleEntity v ) throws InvalidObjectException {
 
         if( v.getNom().length() <= 2  ){
@@ -43,17 +52,9 @@ public class VilleService {
 
     }
 
-    public VilleEntity findVille(int id) {
-        return vr.findById(id).get();
-    }
-
     public void addVille( VilleEntity v ) throws InvalidObjectException {
         checkVille(v);
         vr.save(v);
-    }
-
-    public void delete(int id) {
-        vr.deleteById(id);
     }
 
     public void editVille( int id , VilleEntity v) throws InvalidObjectException , NoSuchElementException {
