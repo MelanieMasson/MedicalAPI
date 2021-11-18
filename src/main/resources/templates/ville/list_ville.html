@@ -6,12 +6,6 @@
 <header class="mb-5" th:include="~{ fragments/header::#header }"></header>
 
 <main class="container">
-    <div class="alert alert-danger" role="alert" th:if="${error != null && error.length() > 0}" th:text="${error}">
-    </div>
-
-    <div class="alert alert-success" role="alert" th:if="${success != null && success.length() > 0}" >
-        Opération effectuée avec succès
-    </div>
 
     <h1>Liste des villes</h1>
 
@@ -62,17 +56,6 @@
         </tbody>
     </table>
 
-    <!-- Exercice -->
-    <!--
-    95 villes
-
-    nb pages : 10 pages : 9 pages de 10 éléments et la dernière contiendra 5 éléments
-
-    ceil( total / nbre par page )
-
-    <li class="page-item"><a class="page-link" href="/ville?page=1">1</a></li>
-    <li class="page-item"><a class="page-link" href="/ville?page=2">2</a></li>
-    -->
     <nav aria-label="Page navigation example">
         <ul class="pagination">
             <li class="page-item"><a class="page-link" href="#">1</a></li>

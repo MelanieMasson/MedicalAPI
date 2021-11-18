@@ -1,4 +1,5 @@
 package fr.m2i.medical.service;
+
 import fr.m2i.medical.api.PatientAPIController;
 import fr.m2i.medical.entities.PatientEntity;
 import fr.m2i.medical.entities.VilleEntity;
@@ -27,16 +28,20 @@ public class PatientService {
         return pr.findAll();
     }
 
-    public Iterable<PatientEntity> findAll(  String search  ) {
+    public Iterable<PatientEntity> findAll( String search ) {
         if( search != null && search.length() > 0 ){
-            return pr.findByNomContains(search);
+            return pr.findByNomContainsOrPrenomContains( search , search );
         }
         return pr.findAll();
     }
 
-    public PatientEntity findPatient(int id) { return pr.findById(id).get();}
+    public PatientEntity findPatient(int id) {
+        return pr.findById(id).get();
+    }
 
-    public void delete(int id) { pr.deleteById(id);}
+    public void delete(int id) {
+        pr.deleteById(id);
+    }
 
     public static boolean validate(String emailStr) {
         Pattern VALID_EMAIL_ADDRESS_REGEX =
@@ -89,8 +94,10 @@ public class PatientService {
 
     public void editPatient(int id, PatientEntity p) throws InvalidObjectException {
         checkPatient(p);
+
         /*Optional<PatientEntity> pe = pr.findById(id);
         PatientEntity pp = pe.orElse( null );*/
+
         try{
             PatientEntity pExistant = pr.findById(id).get();
 

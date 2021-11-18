@@ -1,12 +1,16 @@
 package fr.m2i.medical.repositories;
-import fr.m2i.medical.entities.PatientEntity;
-import fr.m2i.medical.entities.VilleEntity;
-import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
+import fr.m2i.medical.entities.PatientEntity;
+import org.springframework.data.repository.CrudRepository;
 
 public interface PatientRepository extends CrudRepository<PatientEntity , Integer> {
 
-    public List<PatientEntity> findByNomContains(String search );
+    Iterable<PatientEntity> findByNom( String nom ); // select * from patient where nom = :nom
+
+    Iterable<PatientEntity> findByNomContains( String nom ); // select * from patient where nom like :nom
+
+    Iterable<PatientEntity> findByNomContainsOrPrenomContains( String nom , String prenom );
+    // select * from patient where nom like :nom or prenom like :prenom
+
 
 }

@@ -1,7 +1,7 @@
 package fr.m2i.medical.controller;
+
 import fr.m2i.medical.entities.PatientEntity;
 import fr.m2i.medical.entities.VilleEntity;
-import fr.m2i.medical.service.PatientService;
 import fr.m2i.medical.service.VilleService;
 import org.aspectj.weaver.Iterators;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +19,12 @@ import java.util.NoSuchElementException;
 public class VilleController {
 
     @Autowired
-    private VilleService vs;
+    private VilleService vservice;
 
     @GetMapping(value = "")
     public String list( Model model, HttpServletRequest request ){
         String search = request.getParameter("search");
-        Iterable<VilleEntity> villes = vs.findAll(search);
+        Iterable<VilleEntity> villes = vservice.findAll(search);
         model.addAttribute("villes" , villes );
         model.addAttribute( "error" , request.getParameter("error") );
         model.addAttribute( "success" , request.getParameter("success") );
@@ -51,7 +51,7 @@ public class VilleController {
 
         // Enregistrement en utilisant la couche service qui gère déjà nos contraintes
         try{
-            vs.addVille( v );
+            vservice.addVille( v );
         }catch( Exception e ){
             System.out.println( e.getMessage() );
             model.addAttribute("ville" , v );
@@ -59,6 +59,10 @@ public class VilleController {
             return "ville/add_edit";
         }
         return "redirect:/ville?success=true";
+    }
+
+    public VilleService getVservice() {
+        return vservice;
     }
 
     @RequestMapping( method = { RequestMethod.GET , RequestMethod.POST} , value = "/edit/{id}" )
@@ -76,7 +80,7 @@ public class VilleController {
 
             // Enregistrement en utilisant la couche service qui gère déjà nos contraintes
             try{
-                vs.editVille( id , v );
+                vservice.editVille( id , v );
             }catch( Exception e ){
                 v.setId(  -1 ); // hack
                 System.out.println( e.getMessage() );
@@ -87,7 +91,7 @@ public class VilleController {
             return "redirect:/ville?success=true";
         }else{
             try{
-                model.addAttribute("ville" , vs.findVille( id ) );
+                model.addAttribute("ville" , vservice.findVille( id ) );
             }catch ( NoSuchElementException e ){
                 return "redirect:/ville?error=Ville%20introuvalble";
             }
@@ -96,47 +100,18 @@ public class VilleController {
         }
     }
 
-    @GetMapping(value = "/edit/{id}")
-    public String edit( Model model , @PathVariable int id ){
-        model.addAttribute("villes" , vs.findVille( id ) );
-        return "ville/add_edit";
-    }
-
-    @PostMapping(value = "/edit/{id}")
-    public String editPost( HttpServletRequest request , @PathVariable int id ){
-        // Récupération des paramètres envoyés en POST
-        String nom = request.getParameter("nom");
-        int codePostal = Integer.parseInt( request.getParameter("codePostal") );
-        String pays = request.getParameter("pays");
-
-        // Préparation de l'entité à sauvegarder
-        VilleEntity v = new VilleEntity( nom , codePostal , pays );
-
-        // Enregistrement en utilisant la couche service qui gère déjà nos contraintes
-        try{
-            vs.editVille( id , v );
-        }catch( Exception e ){
-            System.out.println( e.getMessage() );
-        }
-        return "redirect:/ville";
-    }
-
     @GetMapping(value = "/delete/{id}")
     public String delete( @PathVariable int id ){
         String message = "?success=true";
         try{
-            vs.delete(id);
+            vservice.delete(id);
         }catch ( Exception e ){
             message = "?error=Ville%20introuvalble";
         }
         return "redirect:/ville"+message;
     }
 
-    public VilleService getVservice() {
-        return vs;
-    }
-
-    public void setVservice(VilleService vs) {
-        this.vs = vs;
+    public void setVservice(VilleService vservice) {
+        this.vservice = vservice;
     }
 }
