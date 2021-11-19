@@ -14,6 +14,13 @@ public class UserEntity {
     private String name;
     private String photouser;
 
+    public UserEntity(int i, String username, String email, String roles, String password, String name, String photouser) {
+    }
+
+    public UserEntity() {
+
+    }
+
     @Id
     @Column(name = "id", nullable = false)
     public int getId() {

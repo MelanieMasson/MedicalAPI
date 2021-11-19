@@ -59,10 +59,10 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
         // utiliser un form de login - login url = /login
         http.formLogin().loginPage("/login").defaultSuccessUrl("/");
 
-        http.authorizeRequests().antMatchers("/login" , "/css/**" , "/images/**" , "/js/**").permitAll();
+        http.authorizeRequests().antMatchers("/login" , "/css/**" , "/images/**" , "/js/**", "/user/**").permitAll();
 
         // Tous les actions post pourront être exécutés par les admin : plus d'erreur 403 en post
-        http.authorizeRequests().antMatchers("**/add" , "**/edit/**", "**/delete/**").hasRole("ADMIN");
+        http.authorizeRequests().antMatchers("**/add" , "**/edit/**", "**/delete/**", "/user/**").hasRole("ADMIN");
 
         http.authorizeRequests().anyRequest().authenticated();
 
