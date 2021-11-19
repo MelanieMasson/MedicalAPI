@@ -5,6 +5,7 @@ import fr.m2i.medical.entities.VilleEntity;
 import fr.m2i.medical.service.VilleService;
 import org.aspectj.weaver.Iterators;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,14 +22,24 @@ public class VilleController {
     @Autowired
     private VilleService vservice;
 
+    //param page : numéro de la page actuelle
+    // size : nbre d'élements par page
     @GetMapping(value = "")
-    public String list( Model model, HttpServletRequest request ){
+    public String list( Model model, HttpServletRequest request , @RequestParam(name = "page", defaultValue = "0") int page , @RequestParam(name="size", defaultValue="5")int size ){
         String search = request.getParameter("search");
-        Iterable<VilleEntity> villes = vservice.findAll(search);
+
+
+        Page<VilleEntity> villes = vservice.findAllByPage(page , size, search);
+
         model.addAttribute("villes" , villes );
         model.addAttribute( "error" , request.getParameter("error") );
         model.addAttribute( "success" , request.getParameter("success") );
         model.addAttribute( "search" , search );
+
+        model.addAttribute("pageCurrent", page);
+
+        model.addAttribute("pages", new int[villes.getTotalPages()]);
+
         return "ville/list_ville";
     }
 

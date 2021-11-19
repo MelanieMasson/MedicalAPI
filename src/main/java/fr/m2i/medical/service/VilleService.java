@@ -1,16 +1,19 @@
 package fr.m2i.medical.service;
+
 import fr.m2i.medical.entities.PatientEntity;
 import fr.m2i.medical.entities.VilleEntity;
 import fr.m2i.medical.repositories.PatientRepository;
 import fr.m2i.medical.repositories.VilleRepository;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.InvalidObjectException;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class VilleService {
@@ -32,12 +35,14 @@ public class VilleService {
         return vr.findAll();
     }
 
-    public VilleEntity findVille(int id) {
-        return vr.findById(id).get();
-    }
+    public Page<VilleEntity> findAllByPage(Integer pageNo, Integer pageSize , String search  ) {
+        Pageable paging = PageRequest.of(pageNo, pageSize);
 
-    public void delete(int id) {
-        vr.deleteById(id);
+        if( search != null && search.length() > 0 ){
+            return vr.findByNomContains(search, paging );
+        }
+
+        return vr.findAll( paging );
     }
 
     private void checkVille( VilleEntity v ) throws InvalidObjectException {
@@ -52,9 +57,17 @@ public class VilleService {
 
     }
 
+    public VilleEntity findVille(int id) {
+        return vr.findById(id).get();
+    }
+
     public void addVille( VilleEntity v ) throws InvalidObjectException {
         checkVille(v);
         vr.save(v);
+    }
+
+    public void delete(int id) {
+        vr.deleteById(id);
     }
 
     public void editVille( int id , VilleEntity v) throws InvalidObjectException , NoSuchElementException {
