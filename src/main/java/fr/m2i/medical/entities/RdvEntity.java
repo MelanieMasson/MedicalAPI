@@ -1,33 +1,33 @@
 package fr.m2i.medical.entities;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
 @Table(name = "rdv", schema = "medical5", catalog = "")
 public class RdvEntity {
     private int id;
-    private PatientEntity patient;
-    private String dateheure;
-    private int duree;
+    private Timestamp dateheure;
+    private Integer duree;
     private String note;
-    private String type;
 
     public RdvEntity() {
     }
 
-    public RdvEntity(int id, PatientEntity patient, String dateheure, int duree, String note, String type) {
-        this.id = id;
-        this.patient = patient;
+    public RdvEntity(Timestamp dateheure, Integer duree, String note, String type, PatientEntity patient) {
         this.dateheure = dateheure;
         this.duree = duree;
         this.note = note;
         this.type = type;
+        this.patient = patient;
     }
+
+    private String type;
+    private PatientEntity patient;
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -37,31 +37,51 @@ public class RdvEntity {
     }
 
     @Basic
-    @Column(name = "dateheure", nullable = false, length = 100)
-    public String getDateheure() {return dateheure;}
-    public void setDateheure(String dateheure) {this.dateheure = dateheure;}
+    @Column(name = "dateheure", nullable = true)
+    public Timestamp getDateheure() {
+        return dateheure;
+    }
+
+    public void setDateheure(Timestamp dateheure) {
+        this.dateheure = dateheure;
+    }
 
     @Basic
-    @Column(name = "duree", nullable = false)
-    public int getDuree() {return duree;}
-    public void setDuree(int duree) {this.duree = duree;}
+    @Column(name = "duree", nullable = true)
+    public Integer getDuree() {
+        return duree;
+    }
+
+    public void setDuree(Integer duree) {
+        this.duree = duree;
+    }
 
     @Basic
-    @Column(name = "note", nullable = false, length = 100)
-    public String getNote() {return note;}
-    public void setNote(String note) {this.note = note;}
+    @Column(name = "note", nullable = true, length = 225)
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
 
     @Basic
-    @Column(name = "type", nullable = false, length = 50)
-    public String getType() {return type;}
-    public void setType(String type) {this.type = type;}
+    @Column(name = "type", nullable = true, length = 100)
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RdvEntity that = (RdvEntity) o;
-        return id == that.id && Objects.equals(dateheure, that.dateheure) && Objects.equals(duree, that.duree) && Objects.equals(note, that.note) && Objects.equals(type, that.type);
+        RdvEntity rdvEntity = (RdvEntity) o;
+        return id == rdvEntity.id && Objects.equals(dateheure, rdvEntity.dateheure) && Objects.equals(duree, rdvEntity.duree) && Objects.equals(note, rdvEntity.note) && Objects.equals(type, rdvEntity.type);
     }
 
     @Override
@@ -70,7 +90,12 @@ public class RdvEntity {
     }
 
     @OneToOne
-    @JoinColumn(name = "patient", referencedColumnName = "id", nullable = false)
-    public PatientEntity getPatient() { return patient; }
-    public void setPatient(PatientEntity patient) { this.patient = patient; }
+    @JoinColumn(name = "patient", referencedColumnName = "id")
+    public PatientEntity getPatient() {
+        return patient;
+    }
+
+    public void setPatient(PatientEntity patient) {
+        this.patient = patient;
+    }
 }

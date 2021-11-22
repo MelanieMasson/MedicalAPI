@@ -1,133 +1,127 @@
 package fr.m2i.medical.controller;
 
-
 import fr.m2i.medical.entities.PatientEntity;
 import fr.m2i.medical.entities.RdvEntity;
-import fr.m2i.medical.entities.VilleEntity;
+import fr.m2i.medical.entities.RdvEntity;
 import fr.m2i.medical.service.PatientService;
 import fr.m2i.medical.service.RdvService;
-import fr.m2i.medical.service.VilleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/rdv")
+@Secured("ROLE_ADMIN")
 public class RdvController {
 
     @Autowired
-    private RdvService rs;
+    private RdvService rdvService;
 
     @Autowired
     private PatientService ps;
 
-    // http://localhost:8080/rdv
+    //param page : numéro de la page actuelle
+    // size : nbre d'élements par page
     @GetMapping(value = "")
-    public String list( Model model , HttpServletRequest req ){
-        String search = req.getParameter("search");
-        model.addAttribute("rdv" , rs.findAll( search ) );
-        model.addAttribute("error" , req.getParameter("error") );
-        model.addAttribute("success" , req.getParameter("success") );
-        model.addAttribute("search" , search );
+    public String list( Model model, HttpServletRequest request ){
+        Integer patientId = Integer.parseInt(request.getParameter("patient") != null && request.getParameter("patient").length() > 0 ? request.getParameter("patient") : "0" );
+        String datesearch = request.getParameter("datesearch" );
+
+        Date dateRecherche = null ;
+        Iterable<RdvEntity> rdvs;
+
+        if( datesearch != null && datesearch.length() == 10 ){
+            rdvs = rdvService.findAll( patientId , datesearch );
+        }else{
+            rdvs = rdvService.findAll( patientId , "" );
+        }
+
+        model.addAttribute("rdvs" , rdvs );
+        model.addAttribute("patients" , ps.findAll() );
+
+        model.addAttribute("patientId" , patientId );
+        model.addAttribute("dateSearch" , dateRecherche );
+
+        model.addAttribute( "error" , request.getParameter("error") );
+        model.addAttribute( "success" , request.getParameter("success") );
+
         return "rdv/list_rdv";
     }
 
     // http://localhost:8080/rdv/add
     @GetMapping(value = "/add")
     public String add( Model model ){
-        model.addAttribute("patients" , ps.findAll() );
         model.addAttribute("rdv" , new RdvEntity() );
+        model.addAttribute("patients" , ps.findAll() );
         return "rdv/add_edit";
+    }
+
+    private RdvEntity createRDV( HttpServletRequest request ){
+        String dateheure = request.getParameter("dateheure");
+        dateheure = dateheure.replace("T" , " ");
+        Integer duree = Integer.parseInt(request.getParameter("duree") );
+        String note = request.getParameter("note");
+        String type = request.getParameter("type");
+        int patientId = Integer.parseInt( request.getParameter("patient") ) ;
+
+        PatientEntity pe = new PatientEntity();
+        pe.setId( patientId );
+
+        System.out.println( "Date et heure passés  : " + dateheure );
+
+        // Timestamp dateheure, Integer duree, String note, String type, PatientEntity patient
+        // Préparation de l'entité à sauvegarder
+        RdvEntity u = new RdvEntity( Timestamp.valueOf( dateheure + ":00" ) , duree , note , type , pe );
+        return u;
     }
 
     @PostMapping(value = "/add")
     public String addPost( HttpServletRequest request , Model model ){
-        // Récupération des paramètres envoyés en POST
-        Integer patient = Integer.parseInt(request.getParameter("patient"));
-        String dateheure = request.getParameter("dateheure");
-        Integer duree = Integer.parseInt(request.getParameter("duree"));
-        String note = request.getParameter("note");
-        String type = request.getParameter("type");
-
-        // Préparation de l'entité à sauvegarder
-        PatientEntity p = new PatientEntity();
-        p.setId(patient);
-        RdvEntity r = new RdvEntity( 0 , p , dateheure , duree , note , type );
-
         // Enregistrement en utilisant la couche service qui gère déjà nos contraintes
         try{
-            rs.addRdv( r );
+            rdvService.addRdv( createRDV( request ) );
         }catch( Exception e ){
             System.out.println( e.getMessage() );
-            model.addAttribute("rdv" , r );
-            model.addAttribute("patients" , ps.findAll() );
-            model.addAttribute("error" , e.getMessage() );
-            return "rdv/add_edit";
         }
+
         return "redirect:/rdv?success=true";
     }
 
-    @GetMapping(value = "/edit/{id}")
-    public String edit( Model model , @PathVariable int id ){
-        model.addAttribute("patients" , ps.findAll() );
-        try {
-            model.addAttribute("rdv", rs.findRdv(id));
-        }catch( NoSuchElementException e){
-            return "redirect:/rdv?error=Rdv%20introuvalble";
-        }
+    @RequestMapping( method = { RequestMethod.GET , RequestMethod.POST} , value = "/edit/{id}" )
+    public String editGetPost( Model model , @PathVariable int id ,  HttpServletRequest request ){
 
-        return "rdv/add_edit";
-    }
+        if( request.getMethod().equals("POST") ){
+            rdvService.editRdv( id, createRDV( request ) );
+            return "redirect:/rdv?success=true";
+        }else{
+            try{
+                model.addAttribute("patients" , ps.findAll() );
+                model.addAttribute("rdv" , rdvService.findRdv( id ) );
+            }catch ( NoSuchElementException e ){
+                return "redirect:/rdv?error=rdv%20introuvalble";
+            }
 
-    @PostMapping(value = "/edit/{id}")
-    public String editPost(  Model model , HttpServletRequest request , @PathVariable int id ){
-        // Récupération des paramètres envoyés en POST
-        int patient = Integer.parseInt(request.getParameter("patient"));
-        String dateheure = request.getParameter("dateheure");
-        int duree = Integer.parseInt(request.getParameter("duree"));
-        String note = request.getParameter("note");
-        String type = request.getParameter("type");
-
-        // Préparation de l'entité à sauvegarder
-        PatientEntity p = new PatientEntity();
-        p.setId(patient);
-        RdvEntity r = new RdvEntity( 0 , p , dateheure , duree , note , type );
-
-        // Enregistrement en utilisant la couche service qui gère déjà nos contraintes
-        try{
-            rs.editRdv( id , r );
-        }catch( Exception e ){
-            model.addAttribute("patients" , ps.findAll() );
-            System.out.println( e.getMessage() );
-            model.addAttribute( "rdv" , r );
-            model.addAttribute("error" , e.getMessage());
             return "rdv/add_edit";
         }
-        return "redirect:/rdv?success=true";
     }
 
     @GetMapping(value = "/delete/{id}")
     public String delete( @PathVariable int id ){
         String message = "?success=true";
         try{
-            rs.delete(id);
-        }catch( Exception e ){
-            message = "?error=Rdv%20introuvable";
+            rdvService.delete(id);
+        }catch ( Exception e ){
+            message = "?error=rdv%20introuvalble";
         }
-
-        return "redirect:/rdv" + message;
+        return "redirect:/rdv"+message;
     }
-
-    public RdvService getRs() {return rs;}
-
-    public void setRs(RdvService rs) {this.rs = rs;}
 
 }

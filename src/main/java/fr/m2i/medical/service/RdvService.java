@@ -1,81 +1,97 @@
 package fr.m2i.medical.service;
 
-import fr.m2i.medical.entities.PatientEntity;
 import fr.m2i.medical.entities.RdvEntity;
 import fr.m2i.medical.repositories.PatientRepository;
 import fr.m2i.medical.repositories.RdvRepository;
+import fr.m2i.medical.repositories.VilleRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.InvalidObjectException;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.NoSuchElementException;
 
 @Service
 public class RdvService {
 
-    private RdvRepository rr;
+    @Autowired
     private PatientRepository pr;
 
-    public RdvService(RdvRepository rr, PatientRepository pr ){
-        this.rr = rr;
-        this.pr = pr;
+    @Autowired
+    private RdvRepository rdvRepo;
+
+    public Iterable<RdvEntity> findAll(  ) {
+        return rdvRepo.findAll();
     }
 
-    public Iterable<RdvEntity> findAll() {
-        return rr.findAll();
-    }
-
-    public Iterable<RdvEntity> findAll( String search ) {
-        if( search != null && search.length() > 0 ){
-            return rr.findByPatientContainsOrDateContains( search , search );
+    public Iterable<RdvEntity> findAll(int patient , String dh) {
+        Date dateRecherche;
+        if( patient > 0 && dh.toString().length() == 10 ){
+            dateRecherche = Date.valueOf(dh); // request.getParameter("datesearch") => "2021-11-22"
+            return rdvRepo.findByCustomByDateEtPatient(patient , dateRecherche );
+        }else if(  patient > 0 ){
+            return rdvRepo.findByPatient_Id(patient);
+        }else if(  dh.toString().length() == 10){
+            dateRecherche = Date.valueOf(dh); // request.getParameter("datesearch") => "2021-11-22"
+            return rdvRepo.findByCustomByDate(dateRecherche);
         }
-        return rr.findAll();
+
+        return rdvRepo.findAll();
+    }
+
+    /* public Page<RdvEntity> findAllByPage(Integer pageNo, Integer pageSize , String search  ) {
+        Pageable paging = PageRequest.of(pageNo, pageSize);
+
+        if( search != null && search.length() > 0 ){
+            return rdvRepo.findByNomContains(search, paging );
+        }
+
+        return rdvRepo.findAll( paging );
+    } */
+
+    private void checkRdv( RdvEntity v ) throws InvalidObjectException {
+
+        /* if( v.getNom().length() <= 2  ){
+            throw new InvalidObjectException("Nom de ville invalide");
+        } */
+
+
     }
 
     public RdvEntity findRdv(int id) {
-        return rr.findById(id).get();
+        return rdvRepo.findById(id).get();
+    }
+
+    public void addRdv( RdvEntity v ) throws InvalidObjectException {
+        checkRdv(v);
+        rdvRepo.save(v);
     }
 
     public void delete(int id) {
-        rr.deleteById(id);
+        rdvRepo.deleteById(id);
     }
 
-    private void checkRdv( RdvEntity r ) throws InvalidObjectException {
-
-        if( r.getDuree() < 15 ){
-            throw new InvalidObjectException("Durée invalide (15min minimum)");
-        }
-
-        PatientEntity pe = pr.findById(r.getPatient().getId()).orElseGet( null );
-        if( pe == null ){
-            throw new InvalidObjectException("Patient invalide");
-        }
-
-    }
-
-    public void addRdv(RdvEntity r) throws InvalidObjectException {
-        checkRdv(r);
-        rr.save(r);
-    }
-
-    public void editRdv(int id, RdvEntity r) throws InvalidObjectException {
-        checkRdv(r);
-
-        /*Optional<RdvEntity> pe = rr.findById(id);
-        RdvEntity pp = pe.orElse( null );*/
-
+    public void editRdv( int id , RdvEntity rdv) throws NoSuchElementException {
+        //checkRdv(v);
         try{
-            RdvEntity rExistant = rr.findById(id).get();
+            RdvEntity rdvExistant = rdvRepo.findById(id).get();
 
-            rExistant.setPatient( r.getPatient() );
-            rExistant.setDateheure( r.getDateheure() );
-            rExistant.setDuree( r.getDuree() );
-            rExistant.setNote( r.getNote() );
-            rExistant.setType( r.getType() );
+            rdvExistant.setPatient( rdv.getPatient() );
+            rdvExistant.setDateheure( rdv.getDateheure() );
+            rdvExistant.setType( rdv.getType() );
+            rdvExistant.setDuree( rdv.getDuree() );
+            rdvExistant.setNote( rdv.getNote() );
 
-            rr.save( rExistant );
+            rdvRepo.save( rdvExistant );
 
         }catch ( NoSuchElementException e ){
             throw e;
         }
+
     }
 }
