@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="fr">
+<head class="mb-5" th:include="~{ fragments/head::#head }"></head>
+<body>
+
+<header class="mb-5" th:include="~{ fragments/header::#header }"></header>
+
+<main class="container">
+
+    <h1>Liste des rdv</h1>
+
+    <form method="get" action="/rdv">
+        <div class="row my-4">
+            <div class="col-4">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" th:value="${search}" name="search" placeholder="Rechercher" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <div class="col-4">
+                <button type="submit" class="btn btn-primary">Rechercher</button>
+            </div>
+            <div class="col-4">
+                <a href="/rdv/add" class="btn btn-primary">Ajouter un rdv</a>
+            </div>
+        </div>
+    </form>
+
+
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>N° Patient</th>
+            <th>Date et heure</th>
+            <th>Durée</th>
+            <th>Note</th>
+            <th>Type</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="rdv : ${ rdvs }">
+            <td th:text="${ rdv.id }"></td>
+            <td th:text="${ rdv.patient }"></td>
+            <td th:text="${ rdv.dateheure }"></td>
+            <td th:text="${ rdv.duree }"></td>
+            <td th:text="${ rdv.note }"></td>
+            <td th:text="${ rdv.type }"></td>
+            <td>
+                <a class="btn btn-secondary btn-sm" th:href="@{'/rdv/edit/' + ${ rdv.id } }"><i
+                        class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                <button class="btn btn-danger btn-sm" th:onclick="|supprimer( 'rdv' , ${rdv.id} )|"><i
+                        class="fa fa-trash-o" aria-hidden="true"></i></button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<footer th:include="~{ fragments/footer::#footer }"></footer>
+
+</body>
+</html>
