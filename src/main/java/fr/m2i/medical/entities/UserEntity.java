@@ -14,11 +14,15 @@ public class UserEntity {
     private String name;
     private String photouser;
 
-    public UserEntity(int i, String username, String email, String roles, String password, String name, String photouser) {
+    public UserEntity() {
     }
 
-    public UserEntity() {
-
+    public UserEntity(String username, String email, String roles, String password, String name) {
+        this.username = username;
+        this.email = email;
+        this.roles = roles;
+        this.password = password;
+        this.name = name;
     }
 
     @Id

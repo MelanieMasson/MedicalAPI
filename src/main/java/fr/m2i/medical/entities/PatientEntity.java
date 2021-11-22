@@ -118,7 +118,6 @@ public class PatientEntity {
     public VilleEntity getVille() {
         return ville;
     }
-
     public void setVille(VilleEntity ville) {
         this.ville = ville;
     }

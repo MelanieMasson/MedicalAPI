@@ -3,11 +3,11 @@ package fr.m2i.medical.controller;
 import fr.m2i.medical.entities.PatientEntity;
 import fr.m2i.medical.entities.UserEntity;
 import fr.m2i.medical.entities.VilleEntity;
-import fr.m2i.medical.service.PatientService;
 import fr.m2i.medical.service.UserService;
 import org.aspectj.weaver.Iterators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,16 +19,17 @@ import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/user")
+@Secured("ROLE_ADMIN")
 public class UserController {
 
     @Autowired
-    private UserService us;
+    private UserService uservice;
 
     //param page : numéro de la page actuelle
     // size : nbre d'élements par page
     @GetMapping(value = "")
     public String list( Model model, HttpServletRequest request ){
-        Iterable<UserEntity> users = us.findAll();
+        Iterable<UserEntity> users = uservice.findAll();
 
         model.addAttribute("users" , users );
         model.addAttribute( "error" , request.getParameter("error") );
@@ -47,82 +48,96 @@ public class UserController {
     @PostMapping(value = "/add")
     public String addPost( HttpServletRequest request , Model model ){
         // Récupération des paramètres envoyés en POST
-        String username = request.getParameter("username");
+        String titi = request.getParameter("tata");
         String email = request.getParameter("email");
-        String roles = request.getParameter("roles");
+        String usertype = request.getParameter("roles");
+        String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String name = request.getParameter("name");
-        String photouser = request.getParameter("photouser");
 
+        // String username, String email, String roles, String password, String name
         // Préparation de l'entité à sauvegarder
-        UserEntity u = new UserEntity( 0 , username , email , roles , password , name , photouser);
+        UserEntity u = new UserEntity( username, email, usertype, password, titi );
 
         // Enregistrement en utilisant la couche service qui gère déjà nos contraintes
         try{
-            us.addUser( u );
+            uservice.addUser( u );
         }catch( Exception e ){
             System.out.println( e.getMessage() );
-            model.addAttribute("user" , u );
-            model.addAttribute("error" , e.getMessage() );
-            return "user/add_edit";
         }
+
         return "redirect:/user?success=true";
     }
 
-    @GetMapping(value = "/edit/{id}")
-    public String edit( Model model , @PathVariable int id ){
-        try {
-            model.addAttribute("user", us.findUser(id));
-        }catch( NoSuchElementException e){
-            return "redirect:/user?error=User%20introuvalble";
-        }
+    @RequestMapping( method = { RequestMethod.GET , RequestMethod.POST} , value = "/edit/{id}" )
+    public String editGetPost( Model model , @PathVariable int id ,  HttpServletRequest request ){
 
-        return "user/add_edit";
-    }
+        if( request.getMethod().equals("POST") ){
+            // Récupération des paramètres envoyés en POST
+            String titi = request.getParameter("tata");
+            String email = request.getParameter("email");
+            String usertype = request.getParameter("roles");
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
 
-    @PostMapping(value = "/edit/{id}")
-    public String editPost(  Model model , HttpServletRequest request , @PathVariable int id ){
-        // Récupération des paramètres envoyés en POST
-        String username = request.getParameter("username");
-        String email = request.getParameter("email");
-        String roles = request.getParameter("roles");
-        String password = request.getParameter("password");
-        String name = request.getParameter("name");
-        String photouser = request.getParameter("photouser");
+            // String username, String email, String roles, String password, String name
+            // Préparation de l'entité à sauvegarder
+            UserEntity u = new UserEntity( username, email, usertype, password, titi );
 
-        // Préparation de l'entité à sauvegarder
-        UserEntity u = new UserEntity( 0 , username , email , roles , password , name , photouser);
+            // Enregistrement en utilisant la couche service qui gère déjà nos contraintes
+            //try{
+            uservice.editUser( id, u );
+            /* }catch( Exception e ){
+                System.out.println( e.getMessage() );
+            } */
 
-        // Enregistrement en utilisant la couche service qui gère déjà nos contraintes
-        try{
-            us.editUser( id , u );
-        }catch( Exception e ){
-            System.out.println( e.getMessage() );
-            model.addAttribute( "user" , u );
-            model.addAttribute("error" , e.getMessage());
+            return "redirect:/user?success=true";
+        }else{
+            try{
+                model.addAttribute("user" , uservice.findUser( id ) );
+            }catch ( NoSuchElementException e ){
+                return "redirect:/user?error=User%20introuvalble";
+            }
+
             return "user/add_edit";
         }
-        return "redirect:/user?success=true";
     }
 
     @GetMapping(value = "/delete/{id}")
     public String delete( @PathVariable int id ){
         String message = "?success=true";
         try{
-            us.delete(id);
+            uservice.delete(id);
+        }catch ( Exception e ){
+            message = "?error=User%20introuvalble";
+        }
+        return "redirect:/user"+message;
+    }
+
+    @PostMapping(value = "/profil/{id}")
+    @Secured({"ROLE_ADMIN", "ROLE_USER" })
+    public String editProfil( @PathVariable int id , HttpServletRequest request ){
+        // Récupération des paramètres envoyés en POST
+        String titi = request.getParameter("tata");
+        String email = request.getParameter("email");
+        String usertype = request.getParameter("roles");
+        String username = request.getParameter("username");
+
+        // String username, String email, String roles, String password, String name
+        // Préparation de l'entité à sauvegarderpassword
+        UserEntity u = new UserEntity( username, email, usertype, "", titi );
+        u.setId( id );
+
+        // Enregistrement en utilisant la couche service qui gère déjà nos contraintes
+        try{
+            uservice.editProfil( id, u );
         }catch( Exception e ){
-            message = "?error=User%20introuvable";
+            System.out.println( e.getMessage() );
         }
 
-        return "redirect:/user" + message;
-    }
+        // Mettre à jour l'utilisateur ????
 
-    public UserService getUs() {
-        return us;
-    }
 
-    public void setUs(UserService us) {
-        this.us = us;
+        return "redirect:/patient?success=true";
     }
 
 }

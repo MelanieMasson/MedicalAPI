@@ -125,9 +125,7 @@ public class PatientController {
         return "redirect:/patient" + message;
     }
 
-    public PatientService getPs() {
-        return ps;
-    }
+    public PatientService getPs() {return ps;}
 
     public void setPs(PatientService ps) {
         this.ps = ps;
