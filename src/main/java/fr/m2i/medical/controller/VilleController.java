@@ -52,6 +52,7 @@ public class VilleController {
 
     @PostMapping(value = "/add")
     public String addPost( HttpServletRequest request , Model model ){
+
         // Récupération des paramètres envoyés en POST
         String nom = request.getParameter("nom");
         int codePostal = Integer.parseInt( request.getParameter("codePostal") );
@@ -69,6 +70,7 @@ public class VilleController {
             model.addAttribute("error" , e.getMessage() );
             return "ville/add_edit";
         }
+
         return "redirect:/ville?success=true";
     }
 

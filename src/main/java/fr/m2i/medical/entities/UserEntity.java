@@ -25,6 +25,15 @@ public class UserEntity {
         this.name = name;
     }
 
+    public UserEntity(String username, String email, String roles, String password, String name , String photouser) {
+        this.username = username;
+        this.email = email;
+        this.roles = roles;
+        this.password = password;
+        this.name = name;
+        this.photouser = photouser;
+    }
+
     @Id
     @Column(name = "id", nullable = false)
     public int getId() {

@@ -1,4 +1,5 @@
 package fr.m2i.medical.entities;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -10,13 +11,13 @@ public class VilleEntity {
     private int codePostal;
     private String pays;
 
-    public VilleEntity() {
-    }
-
     public VilleEntity(String nom, int codePostal, String pays) {
         this.nom = nom;
         this.codePostal = codePostal;
         this.pays = pays;
+    }
+
+    public VilleEntity() {
     }
 
     @Id
@@ -66,6 +67,16 @@ public class VilleEntity {
         if (o == null || getClass() != o.getClass()) return false;
         VilleEntity that = (VilleEntity) o;
         return id == that.id && codePostal == that.codePostal && Objects.equals(nom, that.nom) && Objects.equals(pays, that.pays);
+    }
+
+    @Override
+    public String toString() {
+        return "VilleEntity{" +
+                "id=" + id +
+                ", nom='" + nom + '\'' +
+                ", codePostal=" + codePostal +
+                ", pays='" + pays + '\'' +
+                '}';
     }
 
     @Override
