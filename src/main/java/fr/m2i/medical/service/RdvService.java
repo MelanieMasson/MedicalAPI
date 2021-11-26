@@ -70,6 +70,7 @@ public class RdvService {
     public void addRdv( RdvEntity v ) throws InvalidObjectException {
         checkRdv(v);
         rdvRepo.save(v);
+        //email
     }
 
     public void delete(int id) {

@@ -1,21 +1,15 @@
 package fr.m2i.medical.repositories;
 
 import fr.m2i.medical.entities.RdvEntity;
-import fr.m2i.medical.entities.VilleEntity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.Iterator;
 import java.util.List;
 
-public interface RdvRepository extends CrudRepository<RdvEntity, Integer> {
+public interface RdvRepository extends JpaRepository<RdvEntity, Integer> {
 
-    public Iterable<RdvEntity> findAll();
+    public List<RdvEntity> findAll();
 
     public Iterable<RdvEntity> findByPatient_Id( int p );
 

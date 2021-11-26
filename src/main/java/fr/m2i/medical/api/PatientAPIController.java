@@ -1,6 +1,7 @@
 package fr.m2i.medical.api;
 
 import fr.m2i.medical.entities.PatientEntity;
+import fr.m2i.medical.entities.PatientEntity;
 import fr.m2i.medical.entities.VilleEntity;
 import fr.m2i.medical.repositories.PatientRepository;
 import fr.m2i.medical.service.PatientService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.InvalidObjectException;
 import java.net.URI;
 import java.sql.Date;
@@ -23,10 +25,17 @@ public class PatientAPIController {
 
     PatientService ps;
 
-    public PatientAPIController( PatientService ps ){ this.ps = ps; }
+    public PatientAPIController( PatientService ps ){
+        this.ps = ps;
+    }
 
     @GetMapping(value="" , produces = "application/json")
-    public Iterable<PatientEntity> getAll(){ return ps.findAll(); }
+    public Iterable<PatientEntity> getAll( HttpServletRequest request ){
+        String search = request.getParameter("search");
+        System.out.println( "Recherche de patient avec param = " + search );
+        return ps.findAll( search );
+
+    }
 
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<PatientEntity> get(@PathVariable int id) {
@@ -40,11 +49,10 @@ public class PatientAPIController {
 
     @PostMapping(value="" , consumes = "application/json")
     public ResponseEntity<PatientEntity> add(@RequestBody PatientEntity p ){
-        System.out.println( p );
         try{
             ps.addPatient( p );
 
-            // création de l'url d'accès au nouvel objet => http://localhost:63342/api/ville/20
+            // création de l'url d'accès au nouvel objet => http://localhost:8080/api/ville/20
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand( p.getId() ).toUri();
 
             return ResponseEntity.created( uri ).body(p);
@@ -70,19 +78,12 @@ public class PatientAPIController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Object> delete(@PathVariable int id) throws Exception {
-        // Check sur l'existance du patient, si ko => 404 not found
-        try{
-            PatientEntity v = ps.findPatient(id);
-        }catch( Exception e ){
-            return ResponseEntity.notFound().build();
-        }
-
-        // si on a un problème à ce niveau => sql exception
         try{
             ps.delete(id);
             return ResponseEntity.ok(null);
         }catch ( Exception e ){
             return ResponseEntity.notFound().build();
         }
+
     }
 }

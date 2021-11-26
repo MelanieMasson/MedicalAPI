@@ -8,6 +8,7 @@ import fr.m2i.medical.repositories.VilleRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.InvalidObjectException;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -24,7 +25,9 @@ public class PatientService {
         this.vr = vr;
     }
 
-    public Iterable<PatientEntity> findAll() {return pr.findAll();}
+    public Iterable<PatientEntity> findAll() {
+        return pr.findAll();
+    }
 
     public Iterable<PatientEntity> findAll( String search ) {
         if( search != null && search.length() > 0 ){
@@ -33,9 +36,13 @@ public class PatientService {
         return pr.findAll();
     }
 
-    public PatientEntity findPatient(int id) { return pr.findById(id).get(); }
+    public PatientEntity findPatient(int id) {
+        return pr.findById(id).get();
+    }
 
-    public void delete(int id) { pr.deleteById(id); }
+    public void delete(int id) {
+        pr.deleteById(id);
+    }
 
     public static boolean validate(String emailStr) {
         Pattern VALID_EMAIL_ADDRESS_REGEX =

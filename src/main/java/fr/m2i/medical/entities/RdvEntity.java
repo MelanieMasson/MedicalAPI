@@ -1,5 +1,7 @@
 package fr.m2i.medical.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -8,9 +10,13 @@ import java.util.Objects;
 @Table(name = "rdv", schema = "medical5", catalog = "")
 public class RdvEntity {
     private int id;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private Timestamp dateheure;
     private Integer duree;
     private String note;
+
+    private String type;
+    private PatientEntity patient;
 
     public RdvEntity() {
     }
@@ -22,9 +28,6 @@ public class RdvEntity {
         this.type = type;
         this.patient = patient;
     }
-
-    private String type;
-    private PatientEntity patient;
 
     @Id
     @Column(name = "id", nullable = false)
