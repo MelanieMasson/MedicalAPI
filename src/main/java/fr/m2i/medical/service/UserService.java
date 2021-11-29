@@ -34,6 +34,10 @@ public class UserService {
 
     public void addUser(UserEntity u) {
         u.setPassword(encoder.encode(u.getPassword()));
+
+        if( u.getPhotouser().length() == 0)
+            u.setPhotouser( "default.jpg" );
+
         ur.save(u);
     }
 
@@ -55,6 +59,11 @@ public class UserService {
                 uExistant.setPassword( encoder.encode( u.getPassword() ) );
             }
 
+            if( u.getPhotouser().length() == 0)
+                uExistant.setPhotouser( "default.jpg" );
+            else
+                uExistant.setPhotouser( u.getPhotouser() );
+
             ur.save( uExistant );
 
         }catch ( NoSuchElementException e ){
@@ -69,7 +78,15 @@ public class UserService {
             uExistant.setEmail( u.getEmail() );
             uExistant.setName( u.getName() );
             uExistant.setUsername( u.getUsername() );
-            uExistant.setPhotouser( u.getPhotouser() );
+
+            System.out.println( "------------------" );
+            System.out.println( u.getPhotouser() );
+            System.out.println( "*************" );
+
+            if( u.getPhotouser() == null )
+                uExistant.setPhotouser( "default.jpg" );
+            else
+                uExistant.setPhotouser( u.getPhotouser() );
 
             ur.save( uExistant );
 

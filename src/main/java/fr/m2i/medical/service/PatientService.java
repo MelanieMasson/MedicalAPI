@@ -57,31 +57,24 @@ public class PatientService {
         if( p.getPrenom().length() <= 2 ){
             throw new InvalidObjectException("Prénom invalide");
         }
-
         if( p.getNom().length() <= 2 ){
             throw new InvalidObjectException("Nom invalide");
         }
-
         if( p.getAdresse().length() <= 10 ){
             throw new InvalidObjectException("Adresse invalide");
         }
-
         if( p.getTelephone().length() <= 8 ){
             throw new InvalidObjectException("Téléphone invalide");
         }
-
         if( p.getEmail().length() <= 5 || !validate( p.getEmail() ) ){
             throw new InvalidObjectException("Email invalide");
         }
-
         //System.out.println( "Ville passée en param " + p.getVille().getId() );
-
         /* try{
             VilleEntity ve = vr.findById(p.getVille().getId()).get();
         }catch( Exception e ){
             throw new InvalidObjectException("Ville invalide");
         } */
-
         VilleEntity ve = vr.findById(p.getVille().getId()).orElseGet( null );
         if( ve == null ){
             throw new InvalidObjectException("Ville invalide");
